@@ -1,5 +1,6 @@
 package com.twigger.entity;
 
+import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -20,6 +21,7 @@ public class User implements UserDetails {
 
     @NotBlank
     @Size(max = 50)
+    @JsonView({View.Username.class, View.MessageWithUser.class})
     private String username;
 
     @Size(max = 100)
@@ -35,6 +37,7 @@ public class User implements UserDetails {
     private Set<Role> roles;
 
     @OneToMany(mappedBy = "user")
+    @JsonView(View.UserWithMessages.class)
     private List<Message> messageList;
 
     public User() {

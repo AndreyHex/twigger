@@ -1,9 +1,11 @@
 package com.twigger.entity;
 
+import com.fasterxml.jackson.annotation.JsonView;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 public class Message {
@@ -14,12 +16,15 @@ public class Message {
 
     @NotBlank
     @Size(max = 333)
+    @JsonView({View.UserWithMessages.class, View.Message.class})
     private String text;
 
-    private Date postDate;
+    @JsonView({View.UserWithMessages.class, View.Message.class})
+    private LocalDateTime postDate;
 
     @ManyToOne
-    @JoinColumn(name = "usr_id")
+    @JoinColumn(name = "usr_id", updatable = false)
+    @JsonView(View.MessageWithUser.class)
     private User user;
 
     public long getId() {
@@ -38,11 +43,11 @@ public class Message {
         this.text = text;
     }
 
-    public Date getPostDate() {
+    public LocalDateTime getPostDate() {
         return postDate;
     }
 
-    public void setPostDate(Date postDate) {
+    public void setPostDate(LocalDateTime postDate) {
         this.postDate = postDate;
     }
 

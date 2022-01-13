@@ -6,6 +6,7 @@ import com.twigger.entity.View;
 import com.twigger.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -21,6 +22,7 @@ public class MessageController {
         return ResponseEntity.ok(messageService.getAll());
     }
 
+    @PreAuthorize("isAuthenticated()")
     @PostMapping
     public ResponseEntity<?> create(@RequestBody Message message) {
         return ResponseEntity.ok(messageService.save(message));

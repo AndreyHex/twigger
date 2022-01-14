@@ -20,7 +20,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
     @Autowired
     private JwtUtils jwtUtils;
-
     @Autowired
     private UserService userService;
 

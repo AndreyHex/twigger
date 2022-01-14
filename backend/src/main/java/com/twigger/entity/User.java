@@ -1,5 +1,6 @@
 package com.twigger.entity;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonView;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -7,6 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -25,10 +27,13 @@ public class User implements UserDetails {
     private String username;
 
     @Size(max = 100)
+    @JsonView(View.UserWithPassword.class)
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @NotBlank
     @Size(max = 50)
+    @JsonView(View.UserWithEmail.class)
     private String email;
 
     private boolean status;
@@ -39,6 +44,10 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user")
     @JsonView(View.UserWithMessages.class)
     private List<Message> messageList;
+
+    private LocalDateTime registrationDate;
+
+    private LocalDateTime lastLoginDate;
 
     public User() {
     }
@@ -91,6 +100,30 @@ public class User implements UserDetails {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public List<Message> getMessageList() {
+        return messageList;
+    }
+
+    public void setMessageList(List<Message> messageList) {
+        this.messageList = messageList;
+    }
+
+    public LocalDateTime getRegistrationDate() {
+        return registrationDate;
+    }
+
+    public void setRegistrationDate(LocalDateTime registrationDate) {
+        this.registrationDate = registrationDate;
+    }
+
+    public LocalDateTime getLastLoginDate() {
+        return lastLoginDate;
+    }
+
+    public void setLastLoginDate(LocalDateTime lastLoginDate) {
+        this.lastLoginDate = lastLoginDate;
     }
 
     @Override

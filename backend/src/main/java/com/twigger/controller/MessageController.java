@@ -24,6 +24,7 @@ public class MessageController {
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping
+    @JsonView(View.MessageWithUser.class)
     public ResponseEntity<?> create(@RequestBody Message message) {
         return ResponseEntity.ok(messageService.save(message));
     }

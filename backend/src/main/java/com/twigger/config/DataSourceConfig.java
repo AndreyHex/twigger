@@ -14,14 +14,14 @@ public class DataSourceConfig {
     @Bean
     public DataSource getDataSource() throws URISyntaxException {
 
-        URI dbUri = new URI( "mysql://ff:ff_pass@127.0.0.1/ffdb");// System.getenv("CLEARDB_DATABASE_URL"));
+        URI dbUri = new URI( "mysql://twigger_app:twigger@127.0.0.1/twigger_db");// System.getenv("CLEARDB_DATABASE_URL"));
 
         String username = dbUri.getUserInfo().split(":")[0];
         String password = dbUri.getUserInfo().split(":")[1];
         String dbUrl = "jdbc:mysql://" + dbUri.getHost() + dbUri.getPath() + "?" + dbUri.getQuery();
 
         DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-        dataSourceBuilder.driverClassName("com.mysql.jdbc.Driver");
+        dataSourceBuilder.driverClassName("com.mysql.cj.jdbc.Driver");
         dataSourceBuilder.url(dbUrl);
         dataSourceBuilder.username(username);
         dataSourceBuilder.password(password);

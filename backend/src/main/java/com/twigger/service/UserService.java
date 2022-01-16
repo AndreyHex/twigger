@@ -49,6 +49,7 @@ public class UserService implements UserDetailsService {
         user.setStatus(true);
         user.setRegistrationDate(LocalDateTime.now());
         userRepository.saveAndFlush(user);
+        user.setPassword(rawPassword);
         return authenticateUser(user);
     }
 
@@ -58,12 +59,11 @@ public class UserService implements UserDetailsService {
 
     private String authenticateUser(User user) throws UserNotFoundException {
         Authentication auth = null;
-        System.out.println("In auth: " + userRepository.findUserByUsername(user.getUsername()).orElse(new User()));
         try {
             auth = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
         } catch (AuthenticationException e) {
-            throw new UserNotFoundException("User not found.");
+            throw new UserNotFoundException("User not found.", e);
         }
         return jwtUtils.generateJwtToken(auth);
     }

@@ -2,10 +2,7 @@ package com.twigger.service;
 
 import com.twigger.entity.Role;
 import com.twigger.entity.User;
-import com.twigger.exception.BadRequestException;
-import com.twigger.exception.InvalidPasswordOrUsername;
-import com.twigger.exception.NotFoundException;
-import com.twigger.exception.UserNotFoundException;
+import com.twigger.exception.*;
 import com.twigger.repository.UserRepository;
 import com.twigger.utils.jwt.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,20 +38,30 @@ public class UserService implements UserDetailsService {
         return userRepository.findUserByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found."));
     }
 
-    public String signInUser(User user) throws InvalidPasswordOrUsername {
+    public String signInUser(User user) throws InvalidPasswordOrUsername, UserExistsException {
+        if(userRepository.findUserByUsername(user.getUsername()).isPresent())
+            throw new UserExistsException("User exists.");
         if(user.getUsername().isEmpty() || user.getPassword().isEmpty()) throw new InvalidPasswordOrUsername("Incorrect username or password.");
         String rawPassword = user.getPassword();
-        user.setRoles(Collections.singleton(new Role(2L, "ROLE_USER")));
-        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        user.setStatus(true);
-        user.setRegistrationDate(LocalDateTime.now());
-        userRepository.saveAndFlush(user);
+        user = save(user);
         user.setPassword(rawPassword);
         return authenticateUser(user);
     }
 
     public String signUpUser(User user) throws UserNotFoundException {
         return authenticateUser(user);
+    }
+
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
+
+    private User save(User user) {
+        user.setRoles(Collections.singleton(new Role(2L, "ROLE_USER")));
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        user.setStatus(true);
+        user.setRegistrationDate(LocalDateTime.now());
+        return userRepository.saveAndFlush(user);
     }
 
     private String authenticateUser(User user) throws UserNotFoundException {
@@ -66,9 +73,5 @@ public class UserService implements UserDetailsService {
             throw new UserNotFoundException("User not found.", e);
         }
         return jwtUtils.generateJwtToken(auth);
-    }
-
-    public List<User> findAll() {
-        return userRepository.findAll();
     }
 }

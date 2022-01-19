@@ -23,6 +23,7 @@ public class User implements UserDetails {
 
     @NotBlank
     @Size(max = 50)
+    @Column(unique=true)
     @JsonView({View.Username.class, View.MessageWithUser.class})
     private String username;
 
@@ -31,7 +32,6 @@ public class User implements UserDetails {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @NotBlank
     @Size(max = 50)
     @JsonView(View.UserWithEmail.class)
     private String email;
@@ -50,6 +50,11 @@ public class User implements UserDetails {
     private LocalDateTime lastLoginDate;
 
     public User() {
+    }
+
+    public User(String username, String password) {
+        this.username = username;
+        this.password = password;
     }
 
     public Long getId() {

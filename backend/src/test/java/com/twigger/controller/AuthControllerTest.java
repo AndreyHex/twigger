@@ -1,19 +1,17 @@
 package com.twigger.controller;
 
-import com.twigger.entity.Role;
+import com.twigger.AbstractIntegrationTest;
 import com.twigger.entity.User;
-import com.twigger.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
+import com.twigger.service.UserService;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-
-import java.util.Collections;
 
 import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -22,42 +20,43 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-@ActiveProfiles("test")
-public class AuthControllerTest {
+public class AuthControllerTest extends AbstractIntegrationTest {
 
     @Autowired
     private MockMvc mockMvc;
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private BCryptPasswordEncoder bCryptPasswordEncoder;
+    private UserService userService;
 
-    @BeforeEach
-    void initData() {
-        User user = new User();
-        user.setUsername("test");
-        user.setPassword(bCryptPasswordEncoder.encode("test"));
-        user.setEmail("test@test");
-        user.setStatus(true);
-        user.setRoles(Collections.singleton(new Role(2L, "ROLE_USER")));
-        userRepository.saveAndFlush(user);
+    String token;
+    String requestJson = "{\n" +
+            "\t\"username\":\"auth_test\",\n" +
+            "\t\"password\":\"test\"\n" +
+            "}";
+
+    @BeforeAll
+    void initAll() {
+        token = userService.signInUser(new User("auth_test", "test"));
     }
 
     @Test
-    public void unauthorizedCurrentUserTest() throws Exception {
+    public void testGetUnauthorizedCurrentUser() throws Exception {
         this.mockMvc.perform(get("/api/auth/current"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
 
-    String requestJson = "{\n" +
-            "\t\"username\":\"test\",\n" +
-            "\t\"password\":\"test\"\n" +
-            "}";
     @Test
-    public void signupTest() throws Exception {
+    public void testGetAuthorizedCurrentUser() throws Exception {
+        this.mockMvc.perform(get("/api/auth/current")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .header("Authorization", "Bearer "+token))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("auth_test")));
+    }
+
+    @Test
+    public void testSignUp() throws Exception {
         this.mockMvc.perform(
                 post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)

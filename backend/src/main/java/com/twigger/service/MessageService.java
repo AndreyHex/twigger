@@ -20,14 +20,14 @@ public class MessageService {
     private UserService userService;
 
     public List<Message> findAll() {
-        return messageRepository.findTop50ByOrderByPostDate();
+        return messageRepository.findTop50ByOrderByPostDateDesc();
     }
 
     public List<Message> findAllByUsername(String username) {
         if(username != null)
             userService.loadUserByUsername(username);
         else throw new BadRequestException("Invalid username.");
-        return messageRepository.findAllByUser_UsernameOrderByPostDateAsc(username);
+        return messageRepository.findAllByUser_UsernameOrderByPostDateDesc(username);
     }
 
     public Message save(Message message) throws BadRequestException {

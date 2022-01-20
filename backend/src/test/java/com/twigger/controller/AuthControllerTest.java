@@ -35,14 +35,14 @@ public class AuthControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testGetUnauthorizedCurrentUser() throws Exception {
+    public void testGetCurrentUserWhileUnauthorized() throws Exception {
         this.mockMvc.perform(get("/api/auth/current"))
                 .andDo(print())
                 .andExpect(status().isUnauthorized());
     }
 
     @Test
-    public void testGetAuthorizedCurrentUser() throws Exception {
+    public void testGetCurrentUserWhileAuthorized() throws Exception {
         this.mockMvc.perform(get("/api/auth/current")
                     .contentType(MediaType.APPLICATION_JSON)
                     .header("Authorization", "Bearer "+token))
@@ -101,7 +101,7 @@ public class AuthControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testSignInExistUser() throws Exception {
+    public void testSignInWithExistUser() throws Exception {
         this.mockMvc.perform(
                 post("/api/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)

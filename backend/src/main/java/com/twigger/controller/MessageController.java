@@ -2,6 +2,7 @@ package com.twigger.controller;
 
 import com.fasterxml.jackson.annotation.JsonView;
 import com.twigger.entity.Message;
+import com.twigger.entity.User;
 import com.twigger.entity.View;
 import com.twigger.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,8 +19,14 @@ public class MessageController {
 
     @GetMapping
     @JsonView(View.MessageWithUser.class)
-    public ResponseEntity<?> getAll() {
-        return ResponseEntity.ok(messageService.getAll());
+    public ResponseEntity<?> findAll() {
+        return ResponseEntity.ok(messageService.findAll());
+    }
+
+    @GetMapping("/{username}")
+    @JsonView(View.MessageWithUser.class)
+    public ResponseEntity<?> findAllByUser(@PathVariable("username") String username) {
+        return ResponseEntity.ok(messageService.findAllByUsername(username));
     }
 
     @PreAuthorize("isAuthenticated()")

@@ -43,6 +43,7 @@ public class UserService implements UserDetailsService {
             throw new UserExistsException("User exists.");
         if(user.getUsername().isEmpty() || user.getPassword().isEmpty()) throw new InvalidPasswordOrUsername("Incorrect username or password.");
         String rawPassword = user.getPassword();
+        updateLastLoginDate(user);
         save(user);
         return authenticateUser(user.getUsername(), rawPassword);
     }

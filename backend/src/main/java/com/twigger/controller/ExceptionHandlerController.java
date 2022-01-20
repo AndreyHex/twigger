@@ -1,5 +1,6 @@
 package com.twigger.controller;
 
+import com.twigger.exception.BadRequestException;
 import com.twigger.exception.InvalidPasswordOrUsername;
 import com.twigger.exception.UserExistsException;
 import com.twigger.exception.UserNotFoundException;
@@ -31,6 +32,13 @@ public class ExceptionHandlerController {
     public @ResponseBody Map.Entry<String, String> userExists(UserExistsException e) {
         System.out.println(e.getMessage());
         return Map.entry("Error", "User exists.");
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(BadRequestException.class)
+    public @ResponseBody Map.Entry<String, String> badRequest(BadRequestException e) {
+        System.out.println(e.getMessage());
+        return Map.entry("Error", "Bad request.");
     }
 
 }

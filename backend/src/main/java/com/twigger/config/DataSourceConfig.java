@@ -16,7 +16,7 @@ public class DataSourceConfig {
     @Profile("dev")
     public DataSource getDataSource() throws URISyntaxException {
 
-        URI dbUri = new URI( "mysql://twigger_app:twigger@127.0.0.1/twigger_db");// System.getenv("DATABASE_URL"));
+        URI dbUri = new URI(System.getenv("DATABASE_URL"));
 
         String username = dbUri.getUserInfo().split(":")[0];
         String password = dbUri.getUserInfo().split(":")[1];

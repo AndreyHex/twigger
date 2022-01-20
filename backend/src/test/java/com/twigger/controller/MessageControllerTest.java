@@ -39,7 +39,7 @@ public class MessageControllerTest  extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testUnauthorizedPost() throws Exception {
+    public void testPostUnauthorizedMessage() throws Exception {
         this.mockMvc.perform(post("/api/message")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(message))
@@ -48,7 +48,7 @@ public class MessageControllerTest  extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testPostMessage() throws Exception {
+    public void testPostAuthorizedMessage() throws Exception {
         token = userService.signUpUser(new User("message_test", "test"));
 
         this.mockMvc.perform(post("/api/message")

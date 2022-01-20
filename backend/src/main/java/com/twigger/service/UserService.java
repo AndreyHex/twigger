@@ -43,13 +43,12 @@ public class UserService implements UserDetailsService {
             throw new UserExistsException("User exists.");
         if(user.getUsername().isEmpty() || user.getPassword().isEmpty()) throw new InvalidPasswordOrUsername("Incorrect username or password.");
         String rawPassword = user.getPassword();
-        user = save(user);
-        user.setPassword(rawPassword);
-        return authenticateUser(user);
+        save(user);
+        return authenticateUser(user.getUsername(), rawPassword);
     }
 
     public String signUpUser(User user) throws UserNotFoundException {
-        return authenticateUser(user);
+        return authenticateUser(user.getUsername(), user.getPassword());
     }
 
     public List<User> findAll() {
@@ -64,14 +63,18 @@ public class UserService implements UserDetailsService {
         return userRepository.saveAndFlush(user);
     }
 
-    private String authenticateUser(User user) throws UserNotFoundException {
+    private String authenticateUser(String username, String password) throws UserNotFoundException {
         Authentication auth = null;
         try {
             auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(user.getUsername(), user.getPassword()));
+                    new UsernamePasswordAuthenticationToken(username, password));
         } catch (AuthenticationException e) {
             throw new UserNotFoundException("User not found.", e);
         }
         return jwtUtils.generateJwtToken(auth);
+    }
+
+    private void updateLastLoginDate(User user) {
+        user.setLastLoginDate(LocalDateTime.now());
     }
 }

@@ -61,4 +61,53 @@ public class AuthControllerTest extends AbstractIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString("Token")));
     }
+
+    @Test
+    public void testSignUpWithEmptyUsernameOrPassword() throws Exception {
+        String withoutUsername = "{\n" +
+                "\t\"username\":\"\",\n" +
+                "\t\"password\":\"test\"\n" +
+                "}";
+        this.mockMvc.perform(post("/api/auth/signin")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(withoutUsername))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("Invalid password or username.")));
+        String withoutPassword = "{\n" +
+                "\t\"username\":\"test\",\n" +
+                "\t\"password\":\"\"\n" +
+                "}";
+        this.mockMvc.perform(post("/api/auth/signin")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(withoutPassword))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("Invalid password or username.")));
+    }
+
+    @Test
+    public void testSignInNewUser() throws Exception {
+        String json = "{\n" +
+                "\t\"username\":\"new_test\",\n" +
+                "\t\"password\":\"test\"\n" +
+                "}";
+        this.mockMvc.perform(post("/api/auth/signin")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(json))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString("Token")));
+    }
+
+    @Test
+    public void testSignInExistUser() throws Exception {
+        this.mockMvc.perform(
+                post("/api/auth/signin")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestJson))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("User exists.")));
+    }
 }

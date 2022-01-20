@@ -23,7 +23,7 @@ public class ExceptionHandlerController {
     @ExceptionHandler(InvalidPasswordOrUsername.class)
     public @ResponseBody Map.Entry<String, String> invalidPasswordOrUsername(InvalidPasswordOrUsername e) {
         System.out.println(e.getMessage());
-        return Map.entry("Error", "Invalid password or username");
+        return Map.entry("Error", "Invalid password or username.");
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)

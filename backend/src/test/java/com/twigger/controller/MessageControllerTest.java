@@ -4,7 +4,6 @@ import com.twigger.AbstractIntegrationTest;
 import com.twigger.entity.Message;
 import com.twigger.entity.User;
 import com.twigger.repository.MessageRepository;
-import com.twigger.service.MessageService;
 import com.twigger.service.UserService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -37,7 +36,7 @@ public class MessageControllerTest  extends AbstractIntegrationTest {
 
     @BeforeAll
     void initAll() {
-        token = userService.signInUser(new User("message_test", "test"));
+        token = userService.signUpUser(new User("message_test", "test"));
         User user = (User) userService.loadUserByUsername("message_test");
         messageRepository.saveAllAndFlush(
                 IntStream.range(1, 60)

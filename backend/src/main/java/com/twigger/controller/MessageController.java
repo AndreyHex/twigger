@@ -25,7 +25,7 @@ public class MessageController {
 
     @GetMapping("/{username}")
     @JsonView(View.MessageWithUser.class)
-    public ResponseEntity<?> findAllByUser(@PathVariable("username") String username) {
+    public ResponseEntity<?> findAllByUsername(@PathVariable("username") String username) {
         return ResponseEntity.ok(messageService.findAllByUsername(username));
     }
 

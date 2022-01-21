@@ -38,17 +38,18 @@ public class UserService implements UserDetailsService {
         return userRepository.findUserByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found."));
     }
 
-    public String signInUser(User user) throws InvalidPasswordOrUsername, UserExistsException {
+    public String signUpUser(User user) throws InvalidPasswordOrUsername, UserExistsException {
         if(userRepository.findUserByUsername(user.getUsername()).isPresent())
             throw new UserExistsException("User exists.");
-        if(user.getUsername().isEmpty() || user.getPassword().isEmpty()) throw new InvalidPasswordOrUsername("Incorrect username or password.");
+        checkUsernameAndPassword(user);
         String rawPassword = user.getPassword();
         updateLastLoginDate(user);
         save(user);
         return authenticateUser(user.getUsername(), rawPassword);
     }
 
-    public String signUpUser(User user) throws UserNotFoundException {
+    public String signInUser(User user) throws UserNotFoundException {
+        checkUsernameAndPassword(user);
         return authenticateUser(user.getUsername(), user.getPassword());
     }
 
@@ -77,5 +78,11 @@ public class UserService implements UserDetailsService {
 
     private void updateLastLoginDate(User user) {
         user.setLastLoginDate(LocalDateTime.now());
+    }
+
+    private void checkUsernameAndPassword(User user) {
+        if(user.getUsername() == null || user.getUsername().isEmpty()
+                || user.getPassword() == null || user.getPassword().isEmpty())
+            throw new InvalidPasswordOrUsername("Incorrect username or password.");
     }
 }

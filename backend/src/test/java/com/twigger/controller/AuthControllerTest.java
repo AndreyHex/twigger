@@ -28,10 +28,18 @@ public class AuthControllerTest extends AbstractIntegrationTest {
             "\t\"username\":\"auth_test\",\n" +
             "\t\"password\":\"test\"\n" +
             "}";
+    String withoutPassword = "{\n" +
+            "\t\"username\":\"test\",\n" +
+            "\t\"password\":\"\"\n" +
+            "}";
+    String withoutUsername = "{\n" +
+            "\t\"username\":\"\",\n" +
+            "\t\"password\":\"test\"\n" +
+            "}";
 
     @BeforeAll
     void initAll() {
-        token = userService.signInUser(new User("auth_test", "test"));
+        token = userService.signUpUser(new User("auth_test", "test"));
     }
 
     @Test
@@ -52,9 +60,9 @@ public class AuthControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testSignUp() throws Exception {
+    public void testSignIn() throws Exception {
         this.mockMvc.perform(
-                post("/api/auth/signup")
+                post("/api/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andDo(print())
@@ -63,21 +71,13 @@ public class AuthControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testSignUpWithEmptyUsernameOrPassword() throws Exception {
-        String withoutUsername = "{\n" +
-                "\t\"username\":\"\",\n" +
-                "\t\"password\":\"test\"\n" +
-                "}";
+    public void testSignInWithEmptyUsernameOrPassword() throws Exception {
         this.mockMvc.perform(post("/api/auth/signin")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(withoutUsername))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(content().string(containsString("Invalid password or username.")));
-        String withoutPassword = "{\n" +
-                "\t\"username\":\"test\",\n" +
-                "\t\"password\":\"\"\n" +
-                "}";
         this.mockMvc.perform(post("/api/auth/signin")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(withoutPassword))
@@ -87,12 +87,28 @@ public class AuthControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testSignInNewUser() throws Exception {
+    public void testSignUpWithEmptyUsernameOrPassword() throws Exception {
+        this.mockMvc.perform(post("/api/auth/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(withoutUsername))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("Invalid password or username.")));
+        this.mockMvc.perform(post("/api/auth/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(withoutPassword))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(content().string(containsString("Invalid password or username.")));
+    }
+
+    @Test
+    public void testSignUpNewUser() throws Exception {
         String json = "{\n" +
                 "\t\"username\":\"new_test\",\n" +
                 "\t\"password\":\"test\"\n" +
                 "}";
-        this.mockMvc.perform(post("/api/auth/signin")
+        this.mockMvc.perform(post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(json))
                 .andDo(print())
@@ -101,9 +117,9 @@ public class AuthControllerTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void testSignInWithExistUser() throws Exception {
+    public void testSignUpWithExistUser() throws Exception {
         this.mockMvc.perform(
-                post("/api/auth/signin")
+                post("/api/auth/signup")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(requestJson))
                 .andDo(print())

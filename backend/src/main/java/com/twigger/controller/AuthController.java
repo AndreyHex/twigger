@@ -3,19 +3,13 @@ package com.twigger.controller;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.twigger.entity.User;
 import com.twigger.entity.View;
-import com.twigger.exception.BadRequestException;
-import com.twigger.exception.InvalidPasswordOrUsername;
-import com.twigger.exception.NotFoundException;
-import com.twigger.exception.UserNotFoundException;
 import com.twigger.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.Map;
 
 @RestController
@@ -32,16 +26,16 @@ public class AuthController {
         return ResponseEntity.ok(user);
     }
 
-    @PostMapping("/signup")
-    @JsonView(View.UserWithPassword.class)
-    public ResponseEntity<?> login(@RequestBody User user) {
-        return ResponseEntity.ok(Map.entry("Token", userService.signUpUser(user)));
-    }
-
     @PostMapping("/signin")
     @JsonView(View.UserWithPassword.class)
-    public ResponseEntity<?> registration(@RequestBody User user) {
+    public ResponseEntity<?> login(@RequestBody User user) {
         return ResponseEntity.ok(Map.entry("Token", userService.signInUser(user)));
+    }
+
+    @PostMapping("/signup")
+    @JsonView(View.UserWithPassword.class)
+    public ResponseEntity<?> registration(@RequestBody User user) {
+        return ResponseEntity.ok(Map.entry("Token", userService.signUpUser(user)));
     }
 
 }

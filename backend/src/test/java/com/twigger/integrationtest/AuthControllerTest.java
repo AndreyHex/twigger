@@ -1,12 +1,14 @@
-package com.twigger.controller;
+package com.twigger.integrationtest;
 
-import com.twigger.AbstractIntegrationTest;
 import com.twigger.entity.User;
 import com.twigger.service.UserService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.containsString;
@@ -16,7 +18,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-public class AuthControllerTest extends AbstractIntegrationTest {
+@SpringBootTest
+@AutoConfigureMockMvc
+@ContextConfiguration(classes = GlobalTestConfig.class)
+public class AuthControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
@@ -25,8 +30,8 @@ public class AuthControllerTest extends AbstractIntegrationTest {
 
     String token;
     String requestJson = "{\n" +
-            "\t\"username\":\"auth_test\",\n" +
-            "\t\"password\":\"test\"\n" +
+            "\t\"username\":\"test_user_1\",\n" +
+            "\t\"password\":\"test_password_1\"\n" +
             "}";
     String withoutPassword = "{\n" +
             "\t\"username\":\"test\",\n" +
@@ -37,11 +42,6 @@ public class AuthControllerTest extends AbstractIntegrationTest {
             "\t\"password\":\"test\"\n" +
             "}";
 
-    @BeforeAll
-    void initAll() {
-        token = userService.signUpUser(new User("auth_test", "test"));
-    }
-
     @Test
     public void testGetCurrentUserWhileUnauthorized() throws Exception {
         this.mockMvc.perform(get("/api/auth/current"))
@@ -51,12 +51,13 @@ public class AuthControllerTest extends AbstractIntegrationTest {
 
     @Test
     public void testGetCurrentUserWhileAuthorized() throws Exception {
+        token = userService.signInUser(new User("test_user_1", "test_password_1"));
         this.mockMvc.perform(get("/api/auth/current")
                     .contentType(MediaType.APPLICATION_JSON)
                     .header("Authorization", "Bearer "+token))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(content().string(containsString("auth_test")));
+                .andExpect(content().string(containsString("test_user_1")));
     }
 
     @Test
@@ -105,7 +106,7 @@ public class AuthControllerTest extends AbstractIntegrationTest {
     @Test
     public void testSignUpNewUser() throws Exception {
         String json = "{\n" +
-                "\t\"username\":\"new_test\",\n" +
+                "\t\"username\":\"new_test_user\",\n" +
                 "\t\"password\":\"test\"\n" +
                 "}";
         this.mockMvc.perform(post("/api/auth/signup")

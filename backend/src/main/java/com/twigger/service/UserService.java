@@ -34,11 +34,11 @@ public class UserService implements UserDetailsService {
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Override
-    public UserDetails loadUserByUsername(String username) throws UserNotFoundException {
+    public UserDetails loadUserByUsername(String username) {
         return userRepository.findUserByUsername(username).orElseThrow(() -> new UserNotFoundException("User not found."));
     }
 
-    public String signUpUser(User user) throws InvalidPasswordOrUsername, UserExistsException {
+    public String signUpUser(User user) {
         if(userRepository.findUserByUsername(user.getUsername()).isPresent())
             throw new UserExistsException("User exists.");
         checkUsernameAndPassword(user);
@@ -48,7 +48,7 @@ public class UserService implements UserDetailsService {
         return authenticateUser(user.getUsername(), rawPassword);
     }
 
-    public String signInUser(User user) throws UserNotFoundException {
+    public String signInUser(User user) {
         checkUsernameAndPassword(user);
         return authenticateUser(user.getUsername(), user.getPassword());
     }
@@ -65,7 +65,7 @@ public class UserService implements UserDetailsService {
         return userRepository.saveAndFlush(user);
     }
 
-    private String authenticateUser(String username, String password) throws UserNotFoundException {
+    private String authenticateUser(String username, String password) {
         Authentication auth = null;
         try {
             auth = authenticationManager.authenticate(

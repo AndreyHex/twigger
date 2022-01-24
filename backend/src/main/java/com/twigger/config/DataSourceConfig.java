@@ -30,15 +30,4 @@ public class DataSourceConfig {
         return dataSourceBuilder.build();
     }
 
-    @Bean
-    @Profile("test")
-    public DataSource getTestDataSource() {
-        DataSourceBuilder dataSourceBuilder = DataSourceBuilder.create();
-        dataSourceBuilder.driverClassName("org.h2.Driver");
-        dataSourceBuilder.url("jdbc:h2:mem:jpa_jbd;DB_CLOSE_DELAY=-1");
-        dataSourceBuilder.username("sa");
-        dataSourceBuilder.password("sa");
-        return dataSourceBuilder.build();
-    }
-
 }

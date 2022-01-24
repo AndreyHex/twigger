@@ -1,6 +1,8 @@
 package com.twigger.integrationtest;
 
+import com.twigger.entity.Message;
 import com.twigger.entity.User;
+import com.twigger.repository.MessageRepository;
 import com.twigger.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,9 +12,11 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -24,6 +28,8 @@ public class MessageControllerTest {
     private MockMvc mockMvc;
     @Autowired
     private UserService userService;
+    @Autowired
+    private MessageRepository messageRepository;
 
     private String token;
     private String message = "{\n" +
@@ -73,12 +79,30 @@ public class MessageControllerTest {
 
     @Test
     public void testFindAllMessagesByUsername() throws Exception {
-        String user = "{\"username\":\"message_test\"}";
-        this.mockMvc.perform(get("/api/message")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(user))
+        this.mockMvc.perform(get("/api/message/by/test_user_1"))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+        .andExpect(content().string(containsString("test_user_1")));
     }
 
+    @Test
+    public void testFindMessageByPublicId() throws Exception {
+        Message msg = new Message();
+        msg.setText("Text");
+        msg.setPublicId("tttttt");
+        msg.setUser((User) userService.loadUserByUsername("test_user_1"));
+        messageRepository.saveAndFlush(msg);
+
+        this.mockMvc.perform(get("/api/message/id/"+msg.getPublicId()))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string(containsString(msg.getPublicId())));
+    }
+
+    @Test
+    public void testFindMessageByPublicIdWhileMessageNotExists() throws Exception {
+        this.mockMvc.perform(get("/api/message/id/"+"00fffff"))
+                .andDo(print())
+                .andExpect(status().isNotFound());
+    }
 }

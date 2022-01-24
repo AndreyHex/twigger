@@ -16,6 +16,7 @@ import javax.sql.DataSource;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -48,12 +49,11 @@ public class GlobalTestConfig {
                         .collect(Collectors.toList());
         userRepository.saveAllAndFlush(users);
         messageRepository.saveAllAndFlush(
-                IntStream.range(1, 70)
-                        .mapToObj(a -> {
-                                    User usr = users.get(random.nextInt(10));
-                                    return createMessage(usr, "Message by "+usr.getUsername());
-                                } )
-                        .collect(Collectors.toList())
+                users.stream().flatMap(user ->
+                    IntStream.range(1, 20).mapToObj(i ->
+                        createMessage(user, "Message #"+i+" by "+user.getUsername())
+                    )
+                ).collect(Collectors.toList())
         );
     }
 
@@ -62,6 +62,7 @@ public class GlobalTestConfig {
         newMsg.setPostDate(LocalDateTime.now());
         newMsg.setUser(user);
         newMsg.setText(text);
+        newMsg.setPublicId(Long.toHexString(ThreadLocalRandom.current().nextLong()));
         return newMsg;
     }
 

@@ -19,6 +19,11 @@ public class Message {
     @JsonView({View.UserWithMessages.class, View.Message.class})
     private String text;
 
+    @Size(max = 16)
+    @Column(unique = true)
+    @JsonView(View.Message.class)
+    private String publicId;
+
     @JsonView({View.UserWithMessages.class, View.Message.class})
     private LocalDateTime postDate;
 
@@ -57,5 +62,13 @@ public class Message {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public String getPublicId() {
+        return publicId;
+    }
+
+    public void setPublicId(String publicId) {
+        this.publicId = publicId;
     }
 }

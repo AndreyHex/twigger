@@ -23,7 +23,7 @@ public class User implements UserDetails {
 
     @NotBlank
     @Size(max = 50)
-    @Column(unique=true)
+    @Column(unique = true)
     @JsonView({View.Username.class, View.MessageWithUser.class})
     private String username;
 

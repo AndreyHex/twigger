@@ -19,20 +19,26 @@ public class MessageController {
 
     @GetMapping
     @JsonView(View.MessageWithUser.class)
-    public ResponseEntity<?> findAll() {
+    public ResponseEntity findAll() {
         return ResponseEntity.ok(messageService.findAll());
     }
 
-    @GetMapping("/{username}")
+    @GetMapping("/by/{username}")
     @JsonView(View.MessageWithUser.class)
-    public ResponseEntity<?> findAllByUsername(@PathVariable("username") String username) {
+    public ResponseEntity findAllByUsername(@PathVariable("username") String username) {
         return ResponseEntity.ok(messageService.findAllByUsername(username));
+    }
+
+    @GetMapping("/id/{publicId}")
+    @JsonView({View.MessageWithUser.class})
+    public ResponseEntity findByPublicId(@PathVariable("publicId") String publicId) {
+        return ResponseEntity.ok(messageService.findByPublicId(publicId));
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping
     @JsonView(View.MessageWithUser.class)
-    public ResponseEntity<?> create(@RequestBody Message message) {
+    public ResponseEntity create(@RequestBody Message message) {
         return ResponseEntity.ok(messageService.save(message));
     }
 

@@ -1,9 +1,6 @@
 package com.twigger.controller;
 
-import com.twigger.exception.BadRequestException;
-import com.twigger.exception.InvalidPasswordOrUsername;
-import com.twigger.exception.UserExistsException;
-import com.twigger.exception.UserNotFoundException;
+import com.twigger.exception.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -11,6 +8,13 @@ import java.util.Map;
 
 @ControllerAdvice
 public class ExceptionHandlerController {
+
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ExceptionHandler(NotFoundException.class)
+    public @ResponseBody Map.Entry<String, String> notFound(NotFoundException e) {
+        System.out.println(e.getMessage()); // need proper logging
+        return Map.entry("Error", "Not found.");
+    }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(UserNotFoundException.class)

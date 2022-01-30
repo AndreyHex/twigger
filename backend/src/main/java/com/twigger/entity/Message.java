@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonView;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 public class Message {
@@ -25,7 +25,7 @@ public class Message {
     private String publicId;
 
     @JsonView({View.UserWithMessages.class, View.Message.class})
-    private LocalDateTime postDate;
+    private Instant postDate;
 
     @ManyToOne
     @JoinColumn(name = "usr_id", updatable = false)
@@ -48,11 +48,11 @@ public class Message {
         this.text = text;
     }
 
-    public LocalDateTime getPostDate() {
+    public Instant getPostDate() {
         return postDate;
     }
 
-    public void setPostDate(LocalDateTime postDate) {
+    public void setPostDate(Instant postDate) {
         this.postDate = postDate;
     }
 

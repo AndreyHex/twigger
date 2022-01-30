@@ -13,7 +13,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -59,7 +59,7 @@ public class GlobalTestConfig {
 
     private Message createMessage(User user, String text) {
         Message newMsg =  new Message();
-        newMsg.setPostDate(LocalDateTime.now());
+        newMsg.setPostDate(Instant.now());
         newMsg.setUser(user);
         newMsg.setText(text);
         newMsg.setPublicId(Long.toHexString(ThreadLocalRandom.current().nextLong()));

@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -45,9 +45,9 @@ public class User implements UserDetails {
     @JsonView(View.UserWithMessages.class)
     private List<Message> messageList;
 
-    private LocalDateTime registrationDate;
+    private Instant registrationDate;
 
-    private LocalDateTime lastLoginDate;
+    private Instant lastLoginDate;
 
     public User() {
     }
@@ -115,19 +115,19 @@ public class User implements UserDetails {
         this.messageList = messageList;
     }
 
-    public LocalDateTime getRegistrationDate() {
+    public Instant getRegistrationDate() {
         return registrationDate;
     }
 
-    public void setRegistrationDate(LocalDateTime registrationDate) {
+    public void setRegistrationDate(Instant registrationDate) {
         this.registrationDate = registrationDate;
     }
 
-    public LocalDateTime getLastLoginDate() {
+    public Instant getLastLoginDate() {
         return lastLoginDate;
     }
 
-    public void setLastLoginDate(LocalDateTime lastLoginDate) {
+    public void setLastLoginDate(Instant lastLoginDate) {
         this.lastLoginDate = lastLoginDate;
     }
 

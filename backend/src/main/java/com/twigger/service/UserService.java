@@ -17,7 +17,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
@@ -61,7 +61,7 @@ public class UserService implements UserDetailsService {
         user.setRoles(Collections.singleton(new Role(2L, "ROLE_USER")));
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
         user.setStatus(true);
-        user.setRegistrationDate(LocalDateTime.now());
+        user.setRegistrationDate(Instant.now());
         return userRepository.saveAndFlush(user);
     }
 
@@ -77,7 +77,7 @@ public class UserService implements UserDetailsService {
     }
 
     private void updateLastLoginDate(User user) {
-        user.setLastLoginDate(LocalDateTime.now());
+        user.setLastLoginDate(Instant.now());
     }
 
     private void checkUsernameAndPassword(User user) {

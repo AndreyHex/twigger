@@ -9,7 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -21,22 +21,22 @@ public class MessageService {
     @Autowired
     private UserService userService;
 
-    public List<Message> findAll() {
-        return messageRepository.findTop50ByOrderByPostDateDesc();
+    public List<Message> findAll(Instant time) {
+        return messageRepository.findTop50ByPostDateBeforeOrderByPostDateDesc(time);
     }
 
-    public List<Message> findAllByUsername(String username) {
+    public List<Message> findAllByUsername(String username, Instant time) {
         if(username != null)
             userService.loadUserByUsername(username);
         else throw new BadRequestException("Invalid username.");
-        return messageRepository.findAllByUser_UsernameOrderByPostDateDesc(username);
+        return messageRepository.findAllByUser_UsernameAndPostDateBeforeOrderByPostDateDesc(username, time);
     }
 
     public Message save(Message message) throws BadRequestException {
         if(message.getText().isEmpty()) throw new BadRequestException("Message is empty.");
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         message.setUser(user);
-        message.setPostDate(LocalDateTime.now());
+        message.setPostDate(Instant.now());
         message.setPublicId(getNewPublicId());
         return messageRepository.save(message);
     }

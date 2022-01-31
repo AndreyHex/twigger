@@ -14,14 +14,14 @@ import java.time.OffsetDateTime;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/message")
+@RequestMapping("/api/messages")
 public class MessageController {
 
     @Autowired
     private MessageService messageService;
 
     @GetMapping
-    @JsonView(View.MessageWithUser.class)
+    @JsonView(View.FullMessage.class)
     public ResponseEntity findAll(@RequestParam Optional<String> before_datetime) { //2020-12-10T20:00:10+02:00 format
         Instant time = Instant.now();
         if(before_datetime.isPresent()) {
@@ -35,7 +35,7 @@ public class MessageController {
     }
 
     @GetMapping("/by/{username}")
-    @JsonView(View.MessageWithUser.class)
+    @JsonView(View.FullMessage.class)
     public ResponseEntity findAllByUsername(@PathVariable("username") String username,
                                             @RequestParam Optional<String> before_datetime) {
         Instant time = Instant.now();
@@ -50,14 +50,14 @@ public class MessageController {
     }
 
     @GetMapping("/id/{publicId}")
-    @JsonView({View.MessageWithUser.class})
+    @JsonView({View.FullMessage.class})
     public ResponseEntity findByPublicId(@PathVariable("publicId") String publicId) {
         return ResponseEntity.ok(messageService.findByPublicId(publicId));
     }
 
     @PreAuthorize("isAuthenticated()")
     @PostMapping
-    @JsonView(View.MessageWithUser.class)
+    @JsonView(View.FullMessage.class)
     public ResponseEntity create(@RequestBody Message message) {
         return ResponseEntity.ok(messageService.save(message));
     }

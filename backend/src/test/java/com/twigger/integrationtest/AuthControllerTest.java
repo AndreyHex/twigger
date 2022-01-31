@@ -2,7 +2,6 @@ package com.twigger.integrationtest;
 
 import com.twigger.entity.User;
 import com.twigger.service.UserService;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;

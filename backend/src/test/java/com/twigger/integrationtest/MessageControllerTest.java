@@ -38,7 +38,7 @@ public class MessageControllerTest {
 
     @Test
     public void testPostMessageWhileUnauthorized() throws Exception {
-        this.mockMvc.perform(post("/api/message")
+        this.mockMvc.perform(post("/api/messages")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(message))
                 .andDo(print())
@@ -48,7 +48,7 @@ public class MessageControllerTest {
     @Test
     public void testPostMessageWhileAuthorized() throws Exception {
         token = userService.signInUser(new User("test_user_1", "test_password_1"));
-        this.mockMvc.perform(post("/api/message")
+        this.mockMvc.perform(post("/api/messages")
                     .contentType(MediaType.APPLICATION_JSON)
                     .header("Authorization", "Bearer "+token)
                     .content(message))
@@ -62,7 +62,7 @@ public class MessageControllerTest {
         String emptyMessage = "{\n" +
                 "\t\"text\": \"\"\n" +
                 "}";
-        this.mockMvc.perform(post("/api/message")
+        this.mockMvc.perform(post("/api/messages")
                 .contentType(MediaType.APPLICATION_JSON)
                 .header("Authorization", "Bearer "+token)
                 .content(emptyMessage))
@@ -72,14 +72,14 @@ public class MessageControllerTest {
 
     @Test
     public void testFindAllMessages() throws Exception {
-        this.mockMvc.perform(get("/api/message"))
+        this.mockMvc.perform(get("/api/messages"))
                 .andDo(print())
                 .andExpect(status().isOk());
     }
 
     @Test
     public void testFindAllMessagesByUsername() throws Exception {
-        this.mockMvc.perform(get("/api/message/by/test_user_1"))
+        this.mockMvc.perform(get("/api/messages/by/test_user_1"))
                 .andDo(print())
                 .andExpect(status().isOk())
         .andExpect(content().string(containsString("test_user_1")));
@@ -93,7 +93,7 @@ public class MessageControllerTest {
         msg.setUser((User) userService.loadUserByUsername("test_user_1"));
         messageRepository.saveAndFlush(msg);
 
-        this.mockMvc.perform(get("/api/message/id/"+msg.getPublicId()))
+        this.mockMvc.perform(get("/api/messages/id/"+msg.getPublicId()))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string(containsString(msg.getPublicId())));
@@ -101,7 +101,7 @@ public class MessageControllerTest {
 
     @Test
     public void testFindMessageByPublicIdWhileMessageNotExists() throws Exception {
-        this.mockMvc.perform(get("/api/message/id/"+"00fffff"))
+        this.mockMvc.perform(get("/api/messages/id/"+"00fffff"))
                 .andDo(print())
                 .andExpect(status().isNotFound());
     }

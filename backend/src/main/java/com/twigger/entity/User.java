@@ -24,7 +24,7 @@ public class User implements UserDetails {
     @NotBlank
     @Size(max = 50)
     @Column(unique = true)
-    @JsonView({View.Username.class, View.MessageWithUser.class})
+    @JsonView(View.Username.class)
     private String username;
 
     @Size(max = 100)
